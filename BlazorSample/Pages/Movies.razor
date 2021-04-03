@@ -1,0 +1,37 @@
+﻿@page "/movies"
+@using Models = BlazorSample.Data.Models
+@inject BlazorSample.Data.IMoviesService MoviesService
+@inject NavigationManager Navigation
+
+<h3>Movies</h3>
+<a class="btn btn-sm btn-success"  href="/movie">Add Movie</a>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Release Year</th>
+        <th colspan="2"></th>
+    </tr>
+    @foreach (var movie in movies)
+    {
+        <tr>
+            <td>@movie.Name</td>
+            <td>@movie.ReleaseYear</td>
+            <td><a href="/movie/@movie.Id">Edit</a></td>
+            <td><a href="#" @onclick="@(e => deleteMovie(@movie.Id))">Delete</a></td>
+        </tr>
+    }
+</table>
+
+@code {
+    IEnumerable<Models.Movie> movies = new List<Models.Movie>();
+    protected override async Task OnInitializedAsync()
+    {
+        movies = await MoviesService.GetMovies();
+    }
+
+    private async Task deleteMovie(Guid movieId)
+    {
+        await MoviesService.DeleteMovie(movieId);
+        Navigation.NavigateTo("movies");
+    }
+}

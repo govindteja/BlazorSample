@@ -1,0 +1,70 @@
+﻿@page "/movie"
+@page "/movie/{movieId}"
+@using Models = BlazorSample.Data.Models
+@inject BlazorSample.Data.IMoviesService MoviesService
+@inject NavigationManager Navigation
+
+<h3>Movie</h3>
+
+<EditForm Model="@movie" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <p>
+        <label>
+            Name:
+            <InputText @bind-Value="movie.Name" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Release Year:
+            <InputNumber @bind-Value="movie.ReleaseYear" />
+        </label>
+    </p>
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public string MovieId { get; set; }
+
+    private Models.Movie movie = new Models.Movie();
+    //private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(MovieId))
+        {
+            movie = new Models.Movie() { Id = Guid.NewGuid() };
+        }
+        else
+        {
+            movie = await MoviesService.GetMovie(Guid.Parse(MovieId));
+        }
+
+        //editContext = new EditContext(movie);
+    }
+
+    private async Task HandleValidSubmit(EditContext editContext)
+    {
+        var isValid = editContext.Validate();
+
+        if (isValid)
+        {
+            if (string.IsNullOrEmpty(MovieId))
+            {
+                await MoviesService.AddMovie(movie);
+                Navigation.NavigateTo("movies");
+            }
+            else
+            {
+                await MoviesService.UpdateMovie(movie);
+                Navigation.NavigateTo("movies");
+            }
+        }
+        else
+        {
+        }
+    }
+}
