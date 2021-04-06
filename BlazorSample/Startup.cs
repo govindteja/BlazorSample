@@ -1,4 +1,5 @@
 using BlazorSample.Data;
+using BlazorSample.Data.Models.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +32,7 @@ namespace BlazorSample
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped<IMoviesService, MoviesService>();
+            services.AddScoped<MovieValidator>();
             services.AddDbContext<MoviesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MoviesConnection")));
         }
 
